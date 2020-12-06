@@ -19,7 +19,10 @@ const pluginOptions = {
   recursive: false, // only mode:directory
 
   hashAssets: true, // only mode:parse
-  hashingAlg: 'md5', // only mode:parse
+  hashingAlg: 'sha1', // only mode:parse
+  hashingDigest: 'hex', // only mode:parse
+
+  addIntegrityAttribute: true,
 };
 
 const isRelative = (url) => !/^https?:/.test(url);
@@ -58,8 +61,9 @@ async function transformParser(content, outputPath) {
 
               // calculate hash
               if (pluginOptions.hashAssets) {
-                const hash = await hashFile(assetPath, pluginOptions.hashingAlg);
-                img.setAttribute("data-hash", hash);
+                const hash = await hashFile(assetPath, pluginOptions.hashingAlg, pluginOptions.hashingDigest);
+                if (pluginOptions.addIntegrityAttribute)
+                  img.setAttribute("integrity", `${pluginOptions.hashingAlg}-${hash}`);
 
                 // rewrite paths
                 destDir = outputDir; // flatten subdir
@@ -73,15 +77,14 @@ async function transformParser(content, outputPath) {
               await fs.promises.copyFile(assetPath, destPath);
 
             } else {
-              throw new Error(`${LOG_PREFIX} Cannot resolve asset "${src}" in template "${inputPath}"!`);
+              throw new Error(`${LOG_PREFIX} Cannot resolve asset "${src}" in "${outputPath}" from template "${inputPath}"!`);
             }
           }
 
         }));
-        console.log(LOG_PREFIX, `processed ${elms.length} images in ${outputPath}`);
-
+        
+        console.log(LOG_PREFIX, `Processed ${elms.length} images in "${outputPath}" from template "${inputPath}"`);
         content = dom.serialize();
-
     }
   }
   return content;

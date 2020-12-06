@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 
-module.exports = function fileHash(filename, algorithm = "md5") {
+module.exports = function fileHash(filename, algorithm = "md5", digest="hex") {
   return new Promise((resolve, reject) => {
     // Algorithm depends on availability of OpenSSL on platform
     // Another algorithms: 'sha1', 'md5', 'sha256', 'sha512' ...
@@ -13,7 +13,7 @@ module.exports = function fileHash(filename, algorithm = "md5") {
       });
       // making digest
       s.on("end", function () {
-        const hash = shasum.digest("hex");
+        const hash = shasum.digest(digest);
         return resolve(hash);
       });
     } catch (error) {
