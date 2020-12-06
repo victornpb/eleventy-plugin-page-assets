@@ -4,6 +4,7 @@ const fs = require("fs");
 const pm = require("picomatch");
 const walk = require("./utils/walk");
 const hashFile = require("./utils/hashFile");
+const resolveFile = require("./utils/resolveFile");
 // END IMPORTS
 
 
