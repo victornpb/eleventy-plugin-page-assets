@@ -15,14 +15,16 @@ const pluginOptions = {
   mode: "parse", // directory|parse
   postsMatching: "*.md",
   assetsMatching: "*.png|*.jpg|*.gif",
-  recursive: false,
-  hashAssets: true,
-  hashingAlg: 'md5',
+  
+  recursive: false, // only mode:directory
+
+  hashAssets: true, // only mode:parse
+  hashingAlg: 'md5', // only mode:parse
 };
 
 const isRelative = (url) => !/^https?:/.test(url);
 
-async function transform(content, outputPath) {
+async function transformParser(content, outputPath) {
   const template = this;
   if (outputPath && outputPath.endsWith(".html")) {
     const inputPath = template.inputPath;
@@ -33,7 +35,6 @@ async function transform(content, outputPath) {
       const templateDir = path.dirname(template.inputPath);
       const outputDir = path.dirname(outputPath);
 
-      if (pluginOptions.mode === "parse") {
         // parse
         const dom = new JSDOM(content);
         const elms = [...dom.window.document.querySelectorAll("img")]; //TODO: handle different tags
@@ -81,39 +82,53 @@ async function transform(content, outputPath) {
 
         content = dom.serialize();
 
-      } else {
-        const assets = [];
-        if (pluginOptions.recursive) {
-          for await (const file of walk(templateDir)) {
-            assets.push(file);
-          }
-        } else {
-          assets = await fs.promises.readdir(templateDir);
-          assets = assets.map((f) => path.join(templateDir, f));
+    }
+  }
+  return content;
+}
+
+async function transformDirectoryWalker(content, outputPath) {
+  const template = this;
+  if (outputPath && outputPath.endsWith(".html")) {
+    const inputPath = template.inputPath;
+
+    if (
+      pm.isMatch(inputPath, pluginOptions.postsMatching, { contains: true })
+    ) {
+      const templateDir = path.dirname(template.inputPath);
+      const outputDir = path.dirname(outputPath);
+
+      const assets = [];
+      if (pluginOptions.recursive) {
+        for await (const file of walk(templateDir)) {
+          assets.push(file);
         }
-        assets = assets.filter(file => pm.isMatch(file, pluginOptions.assetsMatching, { contains: true }));
+      } else {
+        assets = await fs.promises.readdir(templateDir);
+        assets = assets.map((f) => path.join(templateDir, f));
+      }
+      assets = assets.filter(file => pm.isMatch(file, pluginOptions.assetsMatching, { contains: true }));
 
-        if (assets.length) {
-          for (file of assets) {
-            const relativeSubDir = path.relative(templateDir, path.dirname(file));
-            const basename = path.basename(file);
+      if (assets.length) {
+        for (file of assets) {
+          const relativeSubDir = path.relative(templateDir, path.dirname(file));
+          const basename = path.basename(file);
 
-            const from = file;
-            const destDir = path.join(outputDir, relativeSubDir);
-            const dest = path.join(destDir, basename);
+          const from = file;
+          const destDir = path.join(outputDir, relativeSubDir);
+          const dest = path.join(destDir, basename);
 
-            console.log(LOG_PREFIX, `Writting ./${dest} from ./${from}`);
-            fs.mkdirSync(destDir, { recursive: true });
-            await fs.promises.copyFile(from, dest);
-          }
+          console.log(LOG_PREFIX, `Writting ./${dest} from ./${from}`);
+          fs.mkdirSync(destDir, { recursive: true });
+          await fs.promises.copyFile(from, dest);
         }
       }
-
 
     }
   }
   return content;
 }
+
 
 // export plugin
 module.exports = {
@@ -122,10 +137,13 @@ module.exports = {
 
     if (pluginOptions.mode === "parse") {
       // html parser
-      // eleventyConfig.addTransform(`${PREFIX}-transform-parser`, assetLoader);
-    } else {
+      eleventyConfig.addTransform(`${PREFIX}-transform-parser`, transformParser);
+    } else if (pluginOptions.mode === "directory") {
       // directory traverse
+      eleventyConfig.addTransform(`${PREFIX}-transform-traverse`, transformDirectoryWalker);
     }
-    eleventyConfig.addTransform(`${PREFIX}-transform-traverse`, transform);
+    else {
+      throw new Error(`${LOG_PREFIX} Invalid mode! (${options.eleventyConfig}) Allowed modes: parse|directory`);
+    }
   },
 };
