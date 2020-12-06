@@ -8,7 +8,7 @@ const hashFile = require("./utils/hashFile");
 const resolveFile = require("./utils/resolveFile");
 // END IMPORTS
 
-const PREFIX = "eleventy-plugin-page-assets";
+const PREFIX = "Eleventy-Plugin-Page-Assets";
 const LOG_PREFIX = `[\x1b[34m${PREFIX}\x1b[0m]`;
 
 const pluginOptions = {
@@ -38,7 +38,7 @@ async function transform(content, outputPath) {
         const dom = new JSDOM(content);
         const elms = [...dom.window.document.querySelectorAll("img")]; //TODO: handle different tags
 
-        console.log(LOG_PREFIX, `found ${elms.length} images in ${outputPath}`);
+        console.log(LOG_PREFIX, `Found ${elms.length} assets in ${outputPath} from template ${inputPath}`);
         await Promise.all(elms.map(async (img) => {
 
           const src = img.getAttribute("src");
@@ -67,12 +67,12 @@ async function transform(content, outputPath) {
                 img.setAttribute("src", destPathRelativeToPage);
               }
 
-              console.log(LOG_PREFIX, "Writting... ", destPath, " from ", assetPath);
+              console.log(LOG_PREFIX, `Writting ./${destPath} from ./${assetPath}`);
               fs.mkdirSync(destDir, { recursive: true });
               await fs.promises.copyFile(assetPath, destPath);
 
             } else {
-              throw new Error(`Cannot resolve src "${src}" in template "${inputPath}"!`);
+              throw new Error(`${LOG_PREFIX} Cannot resolve asset "${src}" in template "${inputPath}"!`);
             }
           }
 
@@ -102,7 +102,7 @@ async function transform(content, outputPath) {
             const destDir = path.join(outputDir, relativeSubDir);
             const dest = path.join(destDir, basename);
 
-            console.log(LOG_PREFIX, "Writting... ", dest, " from ", from);
+            console.log(LOG_PREFIX, `Writting ./${dest} from ./${from}`);
             fs.mkdirSync(destDir, { recursive: true });
             await fs.promises.copyFile(from, dest);
           }
