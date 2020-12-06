@@ -1,6 +1,6 @@
-import path from "path";
-import fs from "fs";
-import pm from "picomatch";
+const path = require("path");
+const fs = require("fs");
+const pm = require("picomatch");
 
 const PREFIX = "eleventy-plugin-page-assets";
 
@@ -41,8 +41,8 @@ async function transform(content, outputPath) {
 }
 
 // export plugin
-export default {
-  configFunction(eleventyConfig, options = {}) {
+module.exports = {
+  configFunction(eleventyConfig, options) {
     pluginOptions = Object.assign(pluginOptions, options);
     eleventyConfig.addTransform(`${PREFIX}-transform`, transform);
   },
