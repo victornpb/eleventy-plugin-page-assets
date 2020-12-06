@@ -1,0 +1,31 @@
+{
+  "name": "eleventy-plugin-page-assets",
+  "version": "0.1.0",
+  "description": "Copy local page assets to permalink folder",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victornpb/eleventy-plugin-page-assets.git"
+  },
+  "keywords": [
+    "eleventy",
+    "plugin",
+    "assets",
+    "copy",
+    "resolve"
+  ],
+  "author": "victornpb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/victornpb/eleventy-plugin-page-assets/issues"
+  },
+  "homepage": "https://github.com/victornpb/eleventy-plugin-page-assets#readme",
+  "peerDependencies": {
+    "@11ty/eleventy": ">=0.8.x"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "picomatch": "^2.2.2"
+  }
+}
