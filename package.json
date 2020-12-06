@@ -26,6 +26,7 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "jsdom": "^16.4.0",
     "picomatch": "^2.2.2"
   }
 }
