@@ -1,12 +1,18 @@
+// IMPORTS
 const path = require("path");
 const fs = require("fs");
 const pm = require("picomatch");
+const walk = require("./walk");
+// END IMPORTS
+
 
 const PREFIX = "eleventy-plugin-page-assets";
+const LOG_PREFIX = `[\x1b[34m${PREFIX}\x1b[0m]`;
 
 let pluginOptions = {
   postsMatching: "*.md",
   assetsMatching: "*.png|*.jpg|*.gif",
+  recursive: false,
 };
 
 async function transform(content, outputPath) {
@@ -20,19 +26,32 @@ async function transform(content, outputPath) {
       const templateDir = path.dirname(template.inputPath);
       const outputDir = path.dirname(outputPath);
 
-      let files = await fs.promises.readdir(templateDir);
+      let files = [];
+      if (pluginOptions.recursive) {
+        for await (const file of walk(templateDir)) {
+          files.push(file);
+        }
+      } else {
+        files = await fs.promises.readdir(templateDir);
+        files = files.map((f) => path.join(templateDir, f));
+      }
+
       files = files.filter((file) =>
         pm.isMatch(file, pluginOptions.assetsMatching, { contains: true })
       );
 
       if (files.length) {
         for (file of files) {
-          const from = path.join(templateDir, file);
-          const to = path.join(outputDir, file);
+          const relativeSubDir = path.relative(templateDir, path.dirname(file));
+          const basename = path.basename(file);
 
-          console.log(`[${PREFIX}]`, "Copying... ", from, " -> ", to);
-          fs.mkdirSync(outputDir, { recursive: true });
-          await fs.promises.copyFile(from, to);
+          const from = file;
+          const destDir = path.join(outputDir, relativeSubDir);
+          const dest = path.join(destDir, basename);
+
+          console.log(LOG_PREFIX, "Copying... ", from, " -> ", dest);
+          fs.mkdirSync(destDir, { recursive: true });
+          await fs.promises.copyFile(from, dest);
         }
       }
     }
