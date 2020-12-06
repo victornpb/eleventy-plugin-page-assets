@@ -15,14 +15,14 @@ async function transform(content, outputPath) {
     const inputPath = template.inputPath;
 
     if (
-      pm.isMatch(inputPath.replace(/^\.\//, ""), pluginOptions.postsMatching)
+      pm.isMatch(inputPath, pluginOptions.postsMatching, {contains:true})
     ) {
       const templateDir = path.dirname(template.inputPath);
       const outputDir = path.dirname(outputPath);
 
       let files = await fs.promises.readdir(templateDir);
       files = files.filter((file) =>
-        pm.isMatch(file, pluginOptions.assetsMatching)
+        pm.isMatch(file, pluginOptions.assetsMatching, {contains:true})
       );
 
       if (files.length) {
