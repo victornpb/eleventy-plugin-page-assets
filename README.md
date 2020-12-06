@@ -20,7 +20,7 @@ const pageAssetsPlugin = require('eleventy-plugin-page-assets');
 
 module.exports = function(eleventyConfig) {
     eleventyConfig.addPlugin(pageAssetsPlugin, {
-        postPath: "src/posts/*/*.md",
+        postsMatching: "src/posts/*/*.md",
         assetsMatching: "*.png|*.jpg|*.gif|*.svg"
     });
 };
