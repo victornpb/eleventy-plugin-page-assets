@@ -57,7 +57,8 @@ Output
 | Attribute | Example Value | Description | Default
 | ------ | ------ | ------ | ------ |
 | `postPath` [required] | `src/posts/*/*.md` | Pattern (glob) filtering which templates to process | `*.md`
-| `assetsMatching` [required] | "*.png|*.jpg|*.gif" | Specify a pattern (glob) that matches which files are going to be copied over | `*.png|*.jpg|*.gif`
+| `assetsMatching` [required] | `*.png|*.jpg|*.gif` | Specify a pattern (glob) that matches which files are going to be copied over | `*.png|*.jpg|*.gif`
+| `recursive` [optional] | `true|false` | Recursively scan assets under subdirectories (example src/posts/foo/bar/baz/img.jpg) | `false`
 
 > **Notes**
 > - All files that matches the pattern and are on the same folder level as the template are going to be copied, even if not used by the template.
