@@ -101,7 +101,7 @@ async function transformDirectoryWalker(content, outputPath) {
       const templateDir = path.dirname(template.inputPath);
       const outputDir = path.dirname(outputPath);
 
-      const assets = [];
+      let assets = [];
       if (pluginOptions.recursive) {
         for await (const file of walk(templateDir)) {
           assets.push(file);
