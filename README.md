@@ -1,6 +1,8 @@
 
 # eleventy-plugin-page-assets
 
+![](https://user-images.githubusercontent.com/3372598/175796506-7b646059-80c6-4882-856a-2a8f689421e3.png)
+
 Copy local page assets to permalink folder
 
 # Instalation
