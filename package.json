@@ -10,6 +10,7 @@
   },
   "keywords": [
     "eleventy",
+    "eleventy-plugin",
     "plugin",
     "assets",
     "copy",
