@@ -5,7 +5,7 @@
 
 Copy local page assets to permalink folder
 
-# Instalation
+# Installation
 
 Available on [npm](https://www.npmjs.com/package/eleventy-plugin-page-assets)
 
