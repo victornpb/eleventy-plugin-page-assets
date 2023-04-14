@@ -72,7 +72,7 @@ async function transformParser(content, outputPath) {
                 img.setAttribute("src", destPathRelativeToPage);
               }
 
-              console.log(LOG_PREFIX, `Writting ./${destPath} from ./${assetPath}`);
+              console.log(LOG_PREFIX, `Writing ./${destPath} from ./${assetPath}`);
               fs.mkdirSync(destDir, { recursive: true });
               await fs.promises.copyFile(assetPath, destPath);
 
@@ -121,7 +121,7 @@ async function transformDirectoryWalker(content, outputPath) {
           const destDir = path.join(outputDir, relativeSubDir);
           const dest = path.join(destDir, basename);
 
-          console.log(LOG_PREFIX, `Writting ./${dest} from ./${from}`);
+          console.log(LOG_PREFIX, `Writing ./${dest} from ./${from}`);
           fs.mkdirSync(destDir, { recursive: true });
           await fs.promises.copyFile(from, dest);
         }
